@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config>
+    <log id="01">
+        <server>10.110.41.165</server>
+        <database>mydata</database>
+        <username>pig</username>
+    </log>
+    <book id="02">
+        <server>l</server>
+        <database>m</database>
+        <username>r</username>
+    </book>
+</config>

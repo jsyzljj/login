@@ -5,11 +5,21 @@
 #include <QSqlQuery>
 #include <QDebug>
 
+#include "settingdialog.h"
+#include "mainwindow.h"
+#include "connection.h"
+
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginDialog)
 {
     ui->setupUi(this);
+
+    m_server = "";
+    m_database = "";
+    m_username = "";
+    m_password = "";
+
 }
 
 LoginDialog::~LoginDialog()
@@ -20,6 +30,14 @@ LoginDialog::~LoginDialog()
 void LoginDialog::on_pushButton_login_clicked()
 {
     //if(ui->lineEdit_username->text().trimmed() == tr("ljj-win7") && ui->lineEdit_password->text() == tr("123456"))
+    if (!createConnection(m_server, m_database, m_username, m_password))
+    {
+        QMessageBox::critical(0, qApp->tr("Connectting failure"),
+            qApp->tr("Unable to establish a database connection."
+                      ), QMessageBox::Cancel);
+        return;
+    }
+
     QString str_username = ui->lineEdit_username->text();
     QString str_password = "";
     bool flag_username = true;
@@ -46,6 +64,8 @@ void LoginDialog::on_pushButton_login_clicked()
     }
     else if(ui->lineEdit_password->text() == str_password)
     {
+        m_log_username = ui->lineEdit_username->text();
+        m_log_password = ui->lineEdit_password->text();
         accept();
     }
     else
@@ -55,4 +75,52 @@ void LoginDialog::on_pushButton_login_clicked()
         ui->lineEdit_password->clear();
         ui->lineEdit_password->setFocus();
     }
+}
+
+void LoginDialog::on_pushButton_setting_clicked()
+{
+    SettingDialog *dlg = new SettingDialog;
+    connect(dlg, SIGNAL(sendData_sql(QString,QString,QString,QString)),
+            this, SLOT(receiveData_sql(QString,QString,QString,QString)));
+    dlg->exec();
+}
+
+void LoginDialog::receiveData_sql(QString str_server, QString str_database, QString str_username, QString str_password)
+{
+    m_server = str_server;
+    m_database = str_database;
+    m_username = str_username;
+    m_password = str_password;
+
+    //qDebug() << m_server << m_database << m_username << m_password ;
+}
+
+QString LoginDialog::Get_Server()
+{
+    return m_server;
+}
+
+QString LoginDialog::Get_Database()
+{
+    return m_database;
+}
+
+QString LoginDialog::Get_Username()
+{
+    return m_username;
+}
+
+QString LoginDialog::Get_Password()
+{
+    return m_password;
+}
+
+QString LoginDialog::Get_Log_Username()
+{
+    return m_log_username;
+}
+
+QString LoginDialog::Get_Log_Password()
+{
+    return m_log_password;
 }

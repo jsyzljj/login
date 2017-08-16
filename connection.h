@@ -5,18 +5,16 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
-static bool createConnection()
+static bool createConnection(QString str_server, QString str_database, QString str_username, QString str_password)
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("localhost");
-    db.setDatabaseName("mydata");
-    db.setUserName("root");
-    db.setPassword("");
+    db.setHostName(str_server);
+    db.setDatabaseName(str_database);
+    db.setUserName(str_username);
+    db.setPassword(str_password);
 
-    if (!db.open()) {
-       QMessageBox::critical(0, qApp->tr("Cannot open database"),
-           qApp->tr("Unable to establisha database connection."
-                     ), QMessageBox::Cancel);
+    if (!db.open())
+    {
        return false;
     }
 
